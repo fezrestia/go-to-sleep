@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.fezrestia.android.application.gotosleep"
+    android:versionCode="1"
+    android:versionName=":Ver.A++"
+>
+
+    <uses-sdk android:minSdkVersion="10" />
+
+    <application
+        android:icon="@drawable/go_to_sleep_icon"
+        android:label="@string/application_label"
+    >
+
+        <!-- Go To Sleep -->
+        <activity
+            android:name="GoToSleepActivity"
+            android:label="@string/application_label"
+            android:icon="@drawable/go_to_sleep_icon"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:excludeFromRecents="true"
+            android:taskAffinity="com.fezrestia.android.application.gotosleep"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Device Administration API -->
+        <receiver
+                android:name=".receiver.DeviceSecurityReceiver"
+                android:permission="android.permission.BIND_DEVICE_ADMIN"
+        >
+            <meta-data
+                    android:name="android.app.device_admin"
+                    android:resource="@xml/device_security_policy"
+            />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+                <action android:name="android.app.action.ACTION_PASSWORD_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Go To Sleep Widget -->
+        <receiver
+            android:name=".widget.GoToSleepWidget"
+            android:label="@string/application_label"
+            android:icon="@drawable/go_to_sleep_icon"
+        >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/go_to_sleep_widget"
+            />
+        </receiver>
+        <service
+            android:name=".service.GoToSleepWidgetService"
+        >
+            <intent-filter>
+                <action android:name="com.fezrestia.android.application.gotosleep.WIDGET_ON_TOUCH" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>
