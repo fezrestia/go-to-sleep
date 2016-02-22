@@ -5,6 +5,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -12,6 +13,8 @@ import com.fezrestia.android.common.log.LogConfig;
 
 public class GoToSleepActivity extends Activity {
     private static final String TAG = "GoToSleepActivity";
+
+    private Handler mUiThreadWorker = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,37 +26,42 @@ public class GoToSleepActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        // This component identifier.
-        ComponentName cn = new ComponentName(
-                this.getPackageName(),
-                "com.fezrestia.android.application.gotosleep.receiver.DeviceSecurityReceiver");
+        mUiThreadWorker.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // This component identifier.
+                    ComponentName cn = new ComponentName(
+                            GoToSleepActivity.this.getPackageName(),
+                            "com.fezrestia.android.application.gotosleep.receiver.DeviceSecurityReceiver");
 
-        // Get DPM.
-        DevicePolicyManager dpm;
-        dpm = (DevicePolicyManager) this.getSystemService(Context.DEVICE_POLICY_SERVICE);
+                    // Get DPM.
+                    DevicePolicyManager dpm;
+                    dpm = (DevicePolicyManager) GoToSleepActivity.this.getSystemService(Context.DEVICE_POLICY_SERVICE);
 
-        // Check application get device administrator right or not.
-        if (dpm.isAdminActive(cn)) {
-            // Lock immediately.
-            try {
-                dpm.lockNow();
-            } catch(SecurityException e) {
-                if(LogConfig.dLog) Log.d("TraceLog",
-                        TAG + ".onResume():[SecurityException:Application is not Device Admin.]");
+                    // Check application get device administrator right or not.
+                    if (dpm.isAdminActive(cn)) {
+                        // Lock immediately.
+                        try {
+                            dpm.lockNow();
+                        } catch(SecurityException e) {
+                            if(LogConfig.dLog) Log.d("TraceLog",
+                                    TAG + ".onResume():[SecurityException:Application is not Device Admin.]");
 
-                // Indicate.
-                Toast.makeText(this, "Security Exception", Toast.LENGTH_SHORT).show();
+                        // Indicate.
+                        Toast.makeText(GoToSleepActivity.this, "Security Exception", Toast.LENGTH_SHORT).show();
 
-                finish();
-            }
-        } else {
-            // Not have device administrator right.
+                        finish();
+                        }
+                    } else {
+                        // Not have device administrator right.
 
-            // Indicate.
-            Toast.makeText(this, "Not Device Administrator", Toast.LENGTH_SHORT).show();
+                        // Indicate.
+                        Toast.makeText(GoToSleepActivity.this, "Not Device Administrator", Toast.LENGTH_SHORT).show();
 
-            finish();
-        }
+                        finish();
+                    }
+                }
+        }, 1000);
     }
 
     @Override

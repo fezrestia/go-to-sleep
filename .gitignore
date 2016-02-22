@@ -1,8 +1,14 @@
-bin/
-gen/
+# Eclipse related
 .classpath
 .project
 proguard.cfg
 project.properties
-local.properties
 
+# Build outputs and intermediates
+bin/
+gen/
+obj/
+
+# Local environment related
+local.properties
+.DS_Store
